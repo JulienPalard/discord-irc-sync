@@ -163,11 +163,17 @@ class DiscordClient(discord.Client):
                 await self.close()
                 return
 
+        print(f"[Discord] <{username}> {content}")
+        if message.reference is not None:
+            if message.reference.resolved is not None:
+                print(rf"[Discord] \_ references a message from {message.reference.resolved.author}")
+            else:
+                print(rf"[Discord] \_ references message {message.reference.message_id}")
+
         """
         Send to IRC
         """
         for c in content.split('\n'):
-            print("[Discord] <%s> %s" % (username, c))
             self.h_send_to_irc(username, self.h_format_text(c.strip()))
 
     async def on_member_join(self, member):

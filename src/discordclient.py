@@ -163,13 +163,11 @@ class DiscordClient(discord.Client):
                 await self.close()
                 return
 
+        try:
+            content = message.reference.resolved.author.display_name + ": " + content
+        except AttributeError:
+            pass  # Either the message as no reference, or it lacks its original message.
         print(f"[Discord] <{username}> {content}")
-        if message.reference is not None:
-            if message.reference.resolved is not None:
-                print(rf"[Discord] \_ references a message from {message.reference.resolved.author}")
-            else:
-                print(rf"[Discord] \_ references message {message.reference.message_id}")
-
         """
         Send to IRC
         """

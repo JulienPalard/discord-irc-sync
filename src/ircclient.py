@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import irc.bot
+import functools
 import threading
 import time
-import ssl
-from . import utils
-from .notification import Notification
 
+import irc.bot
+
+from . import utils
 from .formatting import I2DFormatter
+from .notification import Notification
 
 irc.client.ServerConnection.buffer_class.errors = 'replace'
 
@@ -46,7 +47,9 @@ class IRCClient(irc.bot.SingleServerIRCBot):
             self.master_bot = configuration['irc']["master_bot"]
 
         if self.h_ssl:
-            ssl_factory = irc.connection.Factory(wrapper=ssl.wrap_socket)
+            context = ssl.create_default_context()
+            wrapper = functools.partial(context.wrap_socket, server_hostname=self.h_server)
+            ssl_factory = irc.connection.Factory(wrapper=wrapper)
             super().__init__([(self.h_server, self.h_port)], self.h_nickname, self.h_nickname, connect_factory=ssl_factory)
         else:
             super().__init__([(self.h_server, self.h_port)], self.h_nickname, self.h_nickname)
